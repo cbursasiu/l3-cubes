@@ -11,6 +11,9 @@ PODS:
     - ExpoModulesCore
   - ExpoFont (12.0.4):
     - ExpoModulesCore
+  - ExpoGL (14.0.2):
+    - ExpoModulesCore
+    - ReactCommon/turbomodule/core
   - ExpoKeepAwake (13.0.1):
     - ExpoModulesCore
   - ExpoModulesCore (1.12.4):
@@ -1232,6 +1235,7 @@ DEPENDENCIES:
   - ExpoAsset (from `../node_modules/expo-asset/ios`)
   - ExpoFileSystem (from `../node_modules/expo-file-system/ios`)
   - ExpoFont (from `../node_modules/expo-font/ios`)
+  - ExpoGL (from `../node_modules/expo-gl`)
   - ExpoKeepAwake (from `../node_modules/expo-keep-awake/ios`)
   - ExpoModulesCore (from `../node_modules/expo-modules-core`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
@@ -1310,6 +1314,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-file-system/ios"
   ExpoFont:
     :path: "../node_modules/expo-font/ios"
+  ExpoGL:
+    :path: "../node_modules/expo-gl"
   ExpoKeepAwake:
     :path: "../node_modules/expo-keep-awake/ios"
   ExpoModulesCore:
@@ -1432,6 +1438,7 @@ SPEC CHECKSUMS:
   ExpoAsset: e0db7ae7bd48b077640d8d8071ad5526d9320c3d
   ExpoFileSystem: 80bfe850b1f9922c16905822ecbf97acd711dc51
   ExpoFont: 331cf28d549edc7b6300d3be19302fc5069d9bb1
+  ExpoGL: a2d717e4b7279a075d7dff04d8d2471cb404ad2c
   ExpoKeepAwake: f3a7b0ff4b4911957264dad8cb584ef688326a22
   ExpoModulesCore: a6e3dbeeb297d51b76bdaa0bda60cc6dea607765
   FBLazyVector: 026c8f4ae67b06e088ae01baa2271ef8a26c0e8c
