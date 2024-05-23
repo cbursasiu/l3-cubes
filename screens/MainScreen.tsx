@@ -2,8 +2,6 @@ import {Canvas} from '@react-three/fiber';
 import React, {useRef} from 'react';
 
 import CubeModel from '../components/CubeModel';
-import SelectableMeshComponent from '../components/SelectableMeshComponent';
-import {useGeneralStore} from '../stores/mainStore';
 import {COLORS, COLUMNS_COUNT, ROWS_COUNT} from '../constants';
 import {RoundedBox} from '@react-three/drei';
 import {
@@ -14,7 +12,7 @@ import {
 } from 'react-native-gesture-handler';
 import {Animated} from 'react-native';
 import {randInt} from 'three/src/math/MathUtils.js';
-import {useSpringValue, useSprings} from '@react-spring/native';
+import {useSprings} from '@react-spring/native';
 import {animated} from '@react-spring/three';
 
 const MainScreen = () => {
@@ -95,7 +93,7 @@ const MainScreen = () => {
       },
       config: {duration: 500},
     }),
-    [],
+    [bottomColor.current, topColor.current],
   );
 
   // const selectedCubes = Array(COLUMNS_COUNT)
