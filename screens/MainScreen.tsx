@@ -65,7 +65,7 @@ const MainScreen = () => {
     }),
     [],
   );
-  const [bottomOpacities, bottomOpacityApi] = useSprings(
+  const [bottomOpacities, _bottomOpacityApi] = useSprings(
     ROWS_COUNT * COLUMNS_COUNT,
     index => ({
       from: {opacity: 0},
@@ -96,17 +96,9 @@ const MainScreen = () => {
     [bottomColor.current, topColor.current],
   );
 
-  // const selectedCubes = Array(COLUMNS_COUNT)
-  //   .fill(0)
-  //   .map(() => false);
-  // const columnCount = COLUMNS_COUNT;
-
-  // const topColor = useGeneralStore(state => state.topColor);
-  // const bottomColor = useGeneralStore(state => state.bottomColor);
   const gesture = Gesture.Fling()
     .direction(Directions.DOWN)
     .onEnd(() => {
-      // useGeneralStore.getState().newLine();
       const oldColors = topColor.current;
       console.log('oldColors', oldColors);
       topColor.current = Array(COLUMNS_COUNT)
@@ -188,11 +180,6 @@ const MainScreen = () => {
               Array.from({length: ROWS_COUNT}).map((__, indexY) => (
                 <animated.mesh
                   scale={scale[indexY * COLUMNS_COUNT + indexX].scale}
-                  //   bottomColor.current[indexY][indexX] ===
-                  //   topColor.current[indexX]
-                  //     ? [1.2, 1.2, 1.2]r
-                  //     : [1, 1, 1]
-                  // }
                   key={indexX * COLUMNS_COUNT + indexY}
                   position={[-3 + indexX / 2, -6.0 + indexY / 2, -5]}>
                   <CubeModel
