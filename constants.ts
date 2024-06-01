@@ -1,4 +1,4 @@
-export const COLUMNS_COUNT = 13;
+export const COLUMNS_COUNT = 10;
 export const ROWS_COUNT = 20;
 
 export const COLORS: string[] = [

@@ -3,7 +3,7 @@ import React, {useRef} from 'react';
 
 import CubeModel from '../components/CubeModel';
 import {COLORS, COLUMNS_COUNT, ROWS_COUNT} from '../constants';
-import {RoundedBox} from '@react-three/drei';
+import {RoundedBox, SpotLight} from '@react-three/drei';
 import {
   Directions,
   Gesture,
@@ -13,184 +13,64 @@ import {
 import {Animated} from 'react-native';
 import {randInt} from 'three/src/math/MathUtils.js';
 import {useSprings} from '@react-spring/native';
-import {animated} from '@react-spring/three';
+import {animated, useSpring} from '@react-spring/three';
 
 const MainScreen = () => {
-  const colorsNumber = 13;
-  const topColor = useRef(
-    Array(COLUMNS_COUNT)
-      .fill(0)
-      .map(() => COLORS[randInt(0, colorsNumber - 1)]),
-  );
-  const [topColors, api] = useSprings(
-    COLUMNS_COUNT,
-    index => ({
-      from: {color: 'white'},
-      to: {color: topColor.current[index]},
-      config: {duration: 500},
-    }),
-    [],
-  );
-  const bottomColor = useRef(
-    Array(ROWS_COUNT)
-      .fill(0)
-      .map((_, row) =>
-        Array(COLUMNS_COUNT)
-          .fill(0)
-          .map(() =>
-            row < 4 ? COLORS[randInt(0, colorsNumber - 1)] : '#FFFFFF',
-          ),
-      ),
-  );
-  const bottomColorOpacity = useRef(
-    Array(ROWS_COUNT)
-      .fill(0)
-      .map((_, row) =>
-        Array(COLUMNS_COUNT)
-          .fill(0)
-          .map(() => (row < 4 ? 1 : 0.25)),
-      ),
-  );
-  const [bottomColors, bottomApi] = useSprings(
-    ROWS_COUNT * COLUMNS_COUNT,
-    index => ({
-      from: {color: 'white'},
-      to: {
-        color:
-          bottomColor.current[Math.floor(index / COLUMNS_COUNT)][
-            index % COLUMNS_COUNT
-          ],
-      },
-      config: {duration: 500},
-    }),
-    [],
-  );
-  const [bottomOpacities, _bottomOpacityApi] = useSprings(
-    ROWS_COUNT * COLUMNS_COUNT,
-    index => ({
-      from: {opacity: 0},
-      to: {
-        opacity:
-          bottomColorOpacity.current[Math.floor(index / COLUMNS_COUNT)][
-            index % COLUMNS_COUNT
-          ],
-      },
-      config: {duration: 500},
-    }),
-    [],
-  );
-  const [scale, scaleApi] = useSprings(
-    ROWS_COUNT * COLUMNS_COUNT,
-    index => ({
-      from: {scale: 1},
-      to: {
-        scale:
-          bottomColor.current[Math.floor(index / COLUMNS_COUNT)][
-            index % COLUMNS_COUNT
-          ] === topColor.current[index % COLUMNS_COUNT]
-            ? 1.2
-            : 1,
-      },
-      config: {duration: 500},
-    }),
-    [bottomColor.current, topColor.current],
-  );
+  const colorsNumber = 100;
 
-  const gesture = Gesture.Fling()
-    .direction(Directions.DOWN)
-    .onEnd(() => {
-      const oldColors = topColor.current;
-      console.log('oldColors', oldColors);
-      topColor.current = Array(COLUMNS_COUNT)
-        .fill(0)
-        .map(() => COLORS[randInt(0, colorsNumber - 1)]);
-      api.start(index => ({
-        from: {color: oldColors[index]},
-        to: {color: topColor.current[index]},
-      }));
+  const color = useRef(COLORS[randInt(0, colorsNumber - 1)]);
 
-      const oldBottomColors = bottomColor.current;
-      bottomColor.current = Array(ROWS_COUNT)
-        .fill(0)
-        .map((_, row) =>
-          Array(COLUMNS_COUNT)
-            .fill(0)
-            .map(() =>
-              row < 4 ? COLORS[randInt(0, colorsNumber - 1)] : '#FFFFFF',
-            ),
-        );
-      bottomApi.start(index => ({
-        from: {
-          color:
-            oldBottomColors[Math.floor(index / COLUMNS_COUNT)][
-              index % COLUMNS_COUNT
-            ],
-        },
-        to: {
-          color:
-            bottomColor.current[Math.floor(index / COLUMNS_COUNT)][
-              index % COLUMNS_COUNT
-            ],
-        },
-      }));
-      const oldScale = scale.map(s => s.scale.get());
-      scaleApi.start(index => ({
-        from: {scale: oldScale[index]},
-        to: {
-          scale:
-            bottomColor.current[Math.floor(index / COLUMNS_COUNT)][
-              index % COLUMNS_COUNT
-            ] === topColor.current[index % COLUMNS_COUNT]
-              ? 1.2
-              : 1,
-        },
-      }));
-    });
+  const [currentColor, api] = useSpring(() => ({
+    from: {color: color.current},
+    config: {duration: 300},
+  }));
+
+  const [rotation, apiRotation] = useSpring(() => ({
+    // from: {rotation: {x: 0, y: 0, z: 0}},
+    from: {rotation: {x: 0, y: 0, z: 0}},
+    config: {duration: 300},
+  }));
+
+  const moveGesture = Gesture.Pan().onEnd(() => {
+    color.current = COLORS[randInt(0, colorsNumber - 1)];
+    api.start({color: color.current});
+  });
   return (
     <GestureHandlerRootView style={{flex: 1}}>
-      <GestureDetector gesture={gesture}>
+      <GestureDetector gesture={moveGesture}>
         <Animated.View style={{flex: 1}}>
-          <Canvas camera={{fov: 75, near: 0.1, far: 10, position: [0, 0, 4]}}>
-            <ambientLight intensity={0.4} />
-            <directionalLight color="red" position={[0, 0, 5]} />
-            {Array.from({length: COLUMNS_COUNT}).map((_, indexX) => (
-              <mesh position={[-3 + indexX / 2, 0, -5.15]} key={indexX}>
-                <RoundedBox
-                  key={indexX}
-                  args={[0.44, 13, 0.15]} // Width, height, depth. Default is [1, 1, 1]
-                  radius={0.1} // Radius of the rounded corners. Default is 0.05
-                  smoothness={2} // The number of curve segments. Default is 4
-                  bevelSegments={2} // The number of bevel segments. Default is 4, setting it to 0 removes the bevel, as a result the texture is applied to the whole geometry.
-                  creaseAngle={0.1} // Smooth normals everywhere except faces that meet at an angle greater than the crease angle
-                >
-                  <animated.meshPhongMaterial
-                    color={topColors[indexX].color}
-                    transparent={true}
-                    opacity={0.25}
-                  />
-                </RoundedBox>
-              </mesh>
-            ))}
-            {Array.from({length: COLUMNS_COUNT}).map((_, indexX) => (
-              <mesh key={indexX} position={[-3 + indexX / 2, 6.0, -5]}>
-                <CubeModel color={topColors[indexX].color} />
-              </mesh>
-            ))}
-            {Array.from({length: COLUMNS_COUNT}).map((_, indexX) =>
-              Array.from({length: ROWS_COUNT}).map((__, indexY) => (
-                <animated.mesh
-                  scale={scale[indexY * COLUMNS_COUNT + indexX].scale}
-                  key={indexX * COLUMNS_COUNT + indexY}
-                  position={[-3 + indexX / 2, -6.0 + indexY / 2, -5]}>
-                  <CubeModel
-                    color={bottomColors[indexY * COLUMNS_COUNT + indexX].color}
-                    opacity={
-                      bottomOpacities[indexY * COLUMNS_COUNT + indexX].opacity
-                    }
-                  />
-                </animated.mesh>
-              )),
-            )}
+          <Canvas
+            camera={{fov: 10, near: 0.1, far: 100, position: [0, 0, 100]}}>
+            <ambientLight intensity={0.4} color={'white'} />
+            <directionalLight color="white" position={[3, 3, 7]} />
+            {/* <SpotLight
+              distance={5}
+              angle={0}
+              attenuation={2}
+              anglePower={5} // Diffuse-cone anglePower (default: 5)
+            /> */}
+            <animated.mesh
+              scale={1}
+              key={1}
+              position={[0, 0, 5]}
+              // style={{rotation: rotation.rotation}}
+              rotation={rotation.rotation}
+              castShadow
+              onClick={() => {
+                console.log('click');
+                color.current = COLORS[randInt(0, colorsNumber - 1)];
+                api.start({color: color.current});
+              }}>
+              <RoundedBox
+                args={[1, 1, 1]} // Width, height, depth. Default is [1, 1, 1]
+                radius={0.1} // Radius of the rounded corners. Default is 0.05
+                smoothness={4} // The number of curve segments. Default is 4
+                bevelSegments={4} // The number of bevel segments. Default is 4, setting it to 0 removes the bevel, as a result the texture is applied to the whole geometry.
+                creaseAngle={0.1} // Smooth normals everywhere except faces that meet at an angle greater than the crease angle
+              >
+                <animated.meshPhongMaterial color={currentColor.color} />
+              </RoundedBox>
+            </animated.mesh>
           </Canvas>
         </Animated.View>
       </GestureDetector>
