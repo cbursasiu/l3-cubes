@@ -7,11 +7,11 @@ import {useGeneralStore} from './stores/mainStore';
 const Stack = createNativeStackNavigator();
 
 function App(): React.JSX.Element {
-  const store = useGeneralStore();
-  React.useEffect(() => {
-    store.initLevel(1);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // const store = useGeneralStore();
+  // React.useEffect(() => {
+  //   store.initLevel(1);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
   return (
     <NavigationContainer>
       <Stack.Navigator>

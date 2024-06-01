@@ -62,7 +62,6 @@ export const useGeneralStore = create<GeneralStoreInterface>(set => ({
   initLevel: (levelNumber: number) => {
     const colorsNumber = Math.min(5 + levelNumber * 2, COLORS.length);
     const initialRows = Math.min(3 + levelNumber, Math.floor(ROWS_COUNT / 3));
-    console.log('initialRows', initialRows);
     const topColor = Array(COLUMNS_COUNT)
       .fill(0)
       .map(() => COLORS[randInt(0, colorsNumber - 1)]);
