@@ -45,7 +45,7 @@ const MainScreen = () => {
   const flingStart = useRef({pos: [0, 0]});
   const selected = useRef(false);
 
-  const moveGesture = Gesture.Fling()
+  const moveGesture = Gesture.Pan()
     .onBegin(event => {
       console.log('onBegin', event);
       flingStart.current.pos = [event.x, event.y];
@@ -80,7 +80,8 @@ const MainScreen = () => {
       // rot.current[0] += (Math.PI / 180) * 90;
       api.start({rotation: [rot.current[0], rot.current[1], rot.current[2]]});
     })
-    .runOnJS(false);
+    .cancelsTouchesInView(true)
+    .runOnJS(true);
 
   return (
     <GestureHandlerRootView style={{flex: 1}}>
